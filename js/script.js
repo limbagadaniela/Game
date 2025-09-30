@@ -201,6 +201,22 @@ async function submitScore() {
   }
 }
 
+document.querySelector(".start-btn").addEventListener("mouseover", () => {
+  console.log("Hovered Start Button");
+});
+
+document.querySelector(".start-btn").addEventListener("mouseout", () => {
+  console.log("Mouse Left Start Button");
+});
+
+document.getElementById("playerName").addEventListener("focus", () => {
+  console.log("Player Name Input Focused");
+});
+
+document.getElementById("playerName").addEventListener("blur", () => {
+  console.log("Player Name Input Unfocused");
+});
+
 // -------- FETCH LEADERBOARD --------
 async function fetchLeaderboard() {
   try {
@@ -285,3 +301,4 @@ setInterval(() => {
 
 // initial leaderboard fetch (does not open modal)
 fetchLeaderboard();
+
