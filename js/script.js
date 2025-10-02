@@ -130,10 +130,8 @@ function moveGuards() {
     if (gX >= game.offsetWidth - guard.offsetWidth || gX <= 0) {
       guardDirections[index] *= -1;
       const sprite = guard.querySelector(".Character_spritesheet");
-      sprite.className =
-        guardDirections[index] > 0
-          ? "Character_spritesheet pixelart face-right"
-          : "Character_spritesheet pixelart face-left";
+sprite.className = "Character_spritesheet pixelart face-down"; // always face front
+
     }
     guard.style.left = gX + guardDirections[index] + "px";
   });
