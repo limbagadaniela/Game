@@ -52,28 +52,33 @@ function startOpening() {
 
 // -------- PLAYER MOVEMENT --------
 let inputLocked = false; // used to lock input when modal open
+// -------- PLAYER MOVEMENT (Supports Arrow Keys + WASD) --------
 document.addEventListener("keydown", (e) => {
   if (!gameRunning || inputLocked) return;
-  if (e.key === "ArrowUp" && playerY > 0) {
+  let key = e.key.toLowerCase();
+
+  if ((key === "arrowup" || key === "w") && playerY > 0) {
     playerY -= step;
     playerSprite.className = "Character_spritesheet pixelart face-up";
   }
-  if (e.key === "ArrowDown" && playerY < world.offsetHeight - player.offsetHeight) {
+  if ((key === "arrowdown" || key === "s") && playerY < world.offsetHeight - player.offsetHeight) {
     playerY += step;
     playerSprite.className = "Character_spritesheet pixelart face-down";
   }
-  if (e.key === "ArrowLeft" && playerX > 0) {
+  if ((key === "arrowleft" || key === "a") && playerX > 0) {
     playerX -= step;
     playerSprite.className = "Character_spritesheet pixelart face-left";
   }
-  if (e.key === "ArrowRight" && playerX < game.offsetWidth - player.offsetWidth) {
+  if ((key === "arrowright" || key === "d") && playerX < game.offsetWidth - player.offsetWidth) {
     playerX += step;
     playerSprite.className = "Character_spritesheet pixelart face-right";
   }
+
   updatePlayerPosition();
   checkCollision();
   checkWin();
 });
+
 
 // -------- UPDATE PLAYER --------
 function updatePlayerPosition() {
@@ -125,21 +130,37 @@ function updateScore() {
 // -------- GUARD MOVEMENT --------
 function moveGuards() {
   if (!gameRunning) return;
-  guards.forEach((guard, index) => {
+
+  // Base speed + difficulty scaling with score
+  const baseSpeed = 1.5;
+  const speed = baseSpeed + score * 0.4; // Each score slightly increases guard speed
+
+  guards.forEach((guard) => {
     let gX = parseInt(guard.style.left);
-    if (gX >= game.offsetWidth - guard.offsetWidth || gX <= 0) {
-      guardDirections[index] *= -1;
-      const sprite = guard.querySelector(".Character_spritesheet");
-      sprite.className =
-        guardDirections[index] > 0
-          ? "Character_spritesheet pixelart face-right"
-          : "Character_spritesheet pixelart face-left";
+    const gY = parseInt(guard.style.top);
+    const sprite = guard.querySelector(".Character_spritesheet");
+
+    // Move horizontally toward player
+    if (gX < playerX) {
+      gX += speed;
+      sprite.className = "Character_spritesheet pixelart face-right";
+    } else if (gX > playerX) {
+      gX -= speed;
+      sprite.className = "Character_spritesheet pixelart face-left";
     }
-    guard.style.left = gX + guardDirections[index] + "px";
+
+    // Keep guards within game bounds
+    if (gX < 0) gX = 0;
+    if (gX > game.offsetWidth - guard.offsetWidth)
+      gX = game.offsetWidth - guard.offsetWidth;
+
+    guard.style.left = gX + "px";
   });
+
   checkCollision();
   guardAnimation = requestAnimationFrame(moveGuards);
 }
+
 
 // -------- COLLISION --------
 function checkCollision() {
