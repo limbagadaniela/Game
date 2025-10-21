@@ -90,8 +90,8 @@ body {
 
 .game {
   position: relative;
-  width: 400px;
-  height: 200px;
+  width: 500px;
+  height: 250px;
   border: 3px solid #000;
   overflow: hidden;
   background: #fff;
