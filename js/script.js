@@ -110,24 +110,41 @@ function updateCamera() {
 
 // ======= SCORE SYSTEM =======
 function updateScore() {
+  const playerRect = player.getBoundingClientRect();
+  const checkpoint = document.querySelector(".zone.checkpoint");
+  const checkpointRect = checkpoint.getBoundingClientRect();
+
+  // Detect actual overlap between player and checkpoint zone
+  const touchingCheckpoint =
+    playerRect.left < checkpointRect.right &&
+    playerRect.right > checkpointRect.left &&
+    playerRect.top < checkpointRect.bottom &&
+    playerRect.bottom > checkpointRect.top;
+
   if (goingUp) {
+    // ✅ If player touches checkpoint, stop upward scoring immediately
+    if (touchingCheckpoint) {
+      checkpointReached = true;
+      goingUp = false;
+      lastLineCrossed = 0;
+      return;
+    }
+
+    // Count lines only before reaching checkpoint
     for (let i = totalLines; i >= 1; i--) {
       let lineTop = i * lineSpacing;
-      if (playerY <= lineTop && lastLineCrossed > i) {
+      if (playerY + player.offsetHeight < lineTop && lastLineCrossed > i) {
         score++;
         scoreBoard.textContent = "Score: " + score;
         lastLineCrossed = i;
       }
     }
-    if (playerY <= 50) {
-      checkpointReached = true;
-      goingUp = false;
-      lastLineCrossed = 0;
-    }
-  } else if (checkpointReached) {
+  } 
+  else if (checkpointReached) {
+    // Downward scoring (after touching checkpoint)
     for (let i = 1; i <= totalLines; i++) {
       let lineTop = i * lineSpacing;
-      if (playerY >= lineTop && lastLineCrossed < i) {
+      if (playerY > lineTop && lastLineCrossed < i) {
         score++;
         scoreBoard.textContent = "Score: " + score;
         lastLineCrossed = i;
